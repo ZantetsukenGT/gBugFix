@@ -1,0 +1,8 @@
+{
+	"user": "ZantetsukenGT",
+	"repo": "gBugFix",
+	"dependencies": [
+		"pawn-lang/samp-stdlib",
+		"pawn-lang/YSI-Includes@5.x"
+	]
+}
