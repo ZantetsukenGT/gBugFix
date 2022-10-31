@@ -31,16 +31,16 @@ static bool: GBUG_IsAcceptableAnimation(const animName[5])
 		if (animName[1] == 'U' && animName[2] == 'S') return true; // bus
 		return false;
 	}
-	if(animName[0] == 'C')
+	if (animName[0] == 'C')
 	{
 		if (animName[1] == 'A' && animName[2] == 'R' && animName[3] == '_') return true; // car
 		if (animName[1] == 'O' && animName[2] == 'A') return true; // coach
 		return false;
 	}
-	if(animName[0] == 'T' && animName[1] == 'R' && animName[2] == 'U') return true; // truck
-	if(animName[0] == 'V' && animName[1] == 'A') return true; // van
-	if(animName[0] == 'Q') return true; // quad
-	if(animName[0] == 'W' && animName[1] == 'F') return true; //WF
+	if (animName[0] == 'T' && animName[1] == 'R' && animName[2] == 'U') return true; // truck
+	if (animName[0] == 'V' && animName[1] == 'A') return true; // van
+	if (animName[0] == 'Q') return true; // quad
+	if (animName[0] == 'W' && animName[1] == 'F') return true; //WF
 	return false;
 }
 
