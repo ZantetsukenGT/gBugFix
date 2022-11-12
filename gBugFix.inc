@@ -54,6 +54,7 @@ hook OnPlayerConnect(playerid)
 {
 	s_IsEntering[playerid] = false;
 	s_LastAnimIndex[playerid] = 0;
+	return 1;
 }
 
 hook OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
@@ -63,6 +64,7 @@ hook OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 		GetPlayerPos(playerid, s_PosX[playerid], s_PosY[playerid], s_PosZ[playerid]);
 		//SendClientMessage(playerid, -1, "Attempting to enter vehicle as passenger..");
 	}
+	return 1;
 }
 
 hook OnPlayerStateChange(playerid, PLAYER_STATE: newstate, PLAYER_STATE: oldstate)
@@ -78,6 +80,7 @@ hook OnPlayerStateChange(playerid, PLAYER_STATE: newstate, PLAYER_STATE: oldstat
 		}
 		s_IsEntering[playerid] = false;
 	}
+	return 1;
 }
 
 hook OnPlayerUpdate(playerid)
@@ -86,4 +89,5 @@ hook OnPlayerUpdate(playerid)
 	index = GetPlayerAnimationIndex(playerid);
 	if (index != s_LastAnimIndex[playerid])
 		s_LastAnimIndex[playerid] = index;
+	return 1;
 }
