@@ -16,69 +16,73 @@ static Float: s_PosX[MAX_PLAYERS];
 static Float: s_PosY[MAX_PLAYERS];
 static Float: s_PosZ[MAX_PLAYERS];
 static s_LastAnimIndex[MAX_PLAYERS];
-static bool: s_IsEntering[MAX_PLAYERS];
+static bool: s_IsEnteringAsPassenger[MAX_PLAYERS];
 
-/**
-	Specialized strfind for these exact strings.
-	The strings were extracted from the passenger entry animation names from the game's default 211 vehicles
-*/
-static bool: GBUG_IsAcceptableAnimation(const animName[5])
+// 1812 is the maximum index samp can return from GetPlayerAnimationIndex
+#define GBUG_MAX_ANIMATIONS (1816)
+static bool: s_IsAcceptableAnimation[GBUG_MAX_ANIMATIONS char] = { false, ... };
+
+// Sets the range of animations that represent a valid passenger vehicle entry.
+static GBUG_SetAcceptableRange(min, max)
 {
-	if (animName[0] == 'B')
-	{
-		if (animName[1] == 'I') return true; // biked, bikeh, bikes, bikev
-		if (animName[1] == 'F') return true; // bf
-		if (animName[1] == 'U' && animName[2] == 'S') return true; // bus
-		return false;
-	}
-	if (animName[0] == 'C')
-	{
-		if (animName[1] == 'A' && animName[2] == 'R' && animName[3] == '_') return true; // car
-		if (animName[1] == 'O' && animName[2] == 'A') return true; // coach
-		return false;
-	}
-	if (animName[0] == 'T' && animName[1] == 'R' && animName[2] == 'U') return true; // truck
-	if (animName[0] == 'V' && animName[1] == 'A') return true; // van
-	if (animName[0] == 'Q') return true; // quad
-	if (animName[0] == 'W' && animName[1] == 'F') return true; //WF
-	return false;
+	for (new i = min; i <= max; i++) s_IsAcceptableAnimation { i } = true;
 }
 
+// Returns whether an animation represents a valid passenger vehicle entry.
+static bool: GBUG_IsAcceptableAnimation(animIndex) { return s_IsAcceptableAnimation { animIndex }; }
+
+hook OnScriptInit()
+{
+	// Sets the ranges as accepted animations from the default 211 samp vehicle passenger entry animations.
+	GBUG_SetAcceptableRange(53, 56);	 // bf
+	GBUG_SetAcceptableRange(57, 75);	 // biked
+	GBUG_SetAcceptableRange(76, 93);	 // bikeh
+	GBUG_SetAcceptableRange(103, 122);	 // bikes
+	GBUG_SetAcceptableRange(123, 140);	 // bikev
+	GBUG_SetAcceptableRange(225, 233);	 // bus
+	GBUG_SetAcceptableRange(1007, 1060); // car_
+	GBUG_SetAcceptableRange(354, 359);	 // coach
+	GBUG_SetAcceptableRange(1626, 1642); // truck
+	GBUG_SetAcceptableRange(1648, 1655); // van
+	GBUG_SetAcceptableRange(1336, 1352); // quad
+	GBUG_SetAcceptableRange(1666, 1683); // WF
+	return 1;
+}
+
+// If a player is manually placed in a vehicle, allow it
 hook native PutPlayerInVehicle(playerid, vehicleid, seatid)
 {
-	s_IsEntering[playerid] = false;
+	s_IsEnteringAsPassenger[playerid] = false;
 	return continue(playerid, vehicleid, seatid);
 }
 
 hook OnPlayerConnect(playerid)
 {
-	s_IsEntering[playerid] = false;
-	s_LastAnimIndex[playerid] = 0;
+	s_IsEnteringAsPassenger[playerid] = false;
+	s_LastAnimIndex[playerid]		  = 0;
 	return 1;
 }
 
 hook OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 {
-	if ((s_IsEntering[playerid] = bool: ispassenger))
+	// Only save the player positions once he has pressed G
+	if ((s_IsEnteringAsPassenger[playerid] = !!ispassenger))
 	{
 		GetPlayerPos(playerid, s_PosX[playerid], s_PosY[playerid], s_PosZ[playerid]);
-		//SendClientMessage(playerid, -1, "Attempting to enter vehicle as passenger..");
 	}
 	return 1;
 }
 
 hook OnPlayerStateChange(playerid, PLAYER_STATE: newstate, PLAYER_STATE: oldstate)
 {
-	if (newstate == PLAYER_STATE_PASSENGER && s_IsEntering[playerid]) // Can only be true from attempting normally
+	if (newstate == PLAYER_STATE_PASSENGER && s_IsEnteringAsPassenger[playerid]) // Can only be true from attempting normally
 	{
-		static animLib[1], animName[5];
-		GetAnimationName(s_LastAnimIndex[playerid], animLib, sizeof(animLib), animName, sizeof(animName));
-		if (!GBUG_IsAcceptableAnimation(animName))
+		if (!GBUG_IsAcceptableAnimation(s_LastAnimIndex[playerid]))
 		{
 			SetPlayerPos(playerid, s_PosX[playerid], s_PosY[playerid], s_PosZ[playerid]);
 			GameTextForPlayer(playerid, "~R~entry denied", 3000, 3);
 		}
-		s_IsEntering[playerid] = false;
+		s_IsEnteringAsPassenger[playerid] = false;
 	}
 	return 1;
 }
@@ -86,8 +90,7 @@ hook OnPlayerStateChange(playerid, PLAYER_STATE: newstate, PLAYER_STATE: oldstat
 hook OnPlayerUpdate(playerid)
 {
 	static index;
-	index = GetPlayerAnimationIndex(playerid);
-	if (index != s_LastAnimIndex[playerid])
-		s_LastAnimIndex[playerid] = index;
+	if ((index = GetPlayerAnimationIndex(playerid)) != s_LastAnimIndex[playerid])
+		s_LastAnimIndex[playerid] = index; // only changes if the anim is different than the last one
 	return 1;
 }
