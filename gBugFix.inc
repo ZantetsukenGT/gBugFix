@@ -28,8 +28,8 @@ static GBUG_SetAcceptableRange(min, max)
 	for (new i = min; i <= max; i++) s_IsAcceptableAnimation { i } = true;
 }
 
-// Returns whether an animation represents a valid passenger vehicle entry.
-static bool: GBUG_IsAcceptableAnimation(animIndex) { return s_IsAcceptableAnimation { animIndex }; }
+// Returns whether the player is performing a passenger vehicle enter animation.
+stock bool: GBUG_IsPerformingEntering(playerid) { return s_IsAcceptableAnimation { s_LastAnimIndex[playerid] }; }
 
 hook OnScriptInit()
 {
@@ -77,7 +77,7 @@ hook OnPlayerStateChange(playerid, PLAYER_STATE: newstate, PLAYER_STATE: oldstat
 {
 	if (newstate == PLAYER_STATE_PASSENGER && s_IsEnteringAsPassenger[playerid]) // Can only be true from attempting normally
 	{
-		if (!GBUG_IsAcceptableAnimation(s_LastAnimIndex[playerid]))
+		if (!GBUG_IsPerformingEntering(playerid))
 		{
 			SetPlayerPos(playerid, s_PosX[playerid], s_PosY[playerid], s_PosZ[playerid]);
 			GameTextForPlayer(playerid, "~R~entry denied", 3000, 3);
