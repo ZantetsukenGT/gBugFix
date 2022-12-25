@@ -19,7 +19,7 @@ static s_LastAnimIndex[MAX_PLAYERS];
 static bool: s_IsEnteringAsPassenger[MAX_PLAYERS];
 
 // 1812 is the maximum index samp can return from GetPlayerAnimationIndex
-#define GBUG_MAX_ANIMATIONS (1816)
+#define GBUG_MAX_ANIMATIONS (1813)
 static bool: s_IsAcceptableAnimation[GBUG_MAX_ANIMATIONS char] = { false, ... };
 
 // Sets the range of animations that represent a valid passenger vehicle entry.
