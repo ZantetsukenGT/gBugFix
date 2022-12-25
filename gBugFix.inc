@@ -12,6 +12,10 @@ he will be teleported inside.
 #include <a_samp>
 #include <YSI_Coding\y_hooks>
 
+#if !defined PLAYER_STATE
+	#define PLAYER_STATE: _:
+#endif
+
 static Float: s_PosX[MAX_PLAYERS];
 static Float: s_PosY[MAX_PLAYERS];
 static Float: s_PosZ[MAX_PLAYERS];
