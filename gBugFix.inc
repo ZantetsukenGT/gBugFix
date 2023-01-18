@@ -93,8 +93,6 @@ hook OnPlayerStateChange(playerid, PLAYER_STATE: newstate, PLAYER_STATE: oldstat
 
 hook OnPlayerUpdate(playerid)
 {
-	static index;
-	if ((index = GetPlayerAnimationIndex(playerid)) != s_LastAnimIndex[playerid])
-		s_LastAnimIndex[playerid] = index; // only changes if the anim is different than the last one
+	s_LastAnimIndex[playerid] = GetPlayerAnimationIndex(playerid);
 	return 1;
 }
